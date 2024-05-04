@@ -1,6 +1,5 @@
 package model;
 
-// Book entity class representing a book
 public class Book {
     private int bookID;
     private String title;

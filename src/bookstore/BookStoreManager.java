@@ -9,15 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-
-// Singleton class for managing the book store
 public class BookStoreManager {
+    // Đây là biến static để lưu trữ thể hiện duy nhất của lớp
     private static BookStoreManager instance;
     private final Map<Integer, Book> bookInventory;
     private final List<Sale> sales;
     private double totalRevenue;
     private int nextBookID;
 
+    // Sử dụng constructor private để ngăn chặn việc tạo ra các thể hiện mới từ bên ngoài
     private BookStoreManager() {
         bookInventory = new HashMap<>();
         sales = new ArrayList<>();
@@ -25,7 +25,7 @@ public class BookStoreManager {
         nextBookID = 1;
     }
 
-    // Get the singleton instance
+    //  Phương thức getInstance() để truy cập thể  duy nhất của lớp
     public static synchronized BookStoreManager getInstance() {
         if (instance == null) {
             instance = new BookStoreManager();
@@ -33,19 +33,16 @@ public class BookStoreManager {
         return instance;
     }
 
-    // Add books to the inventory
     public void addBook(String title, String author, double price, int quantity, String description) {
         Book book = new Book(nextBookID++, title, author, price, description);
         book.setQuantity(quantity);
         bookInventory.put(book.getBookID(), book);
     }
 
-    // Get the list of books in the inventory
     public Map<Integer, Book> getBookList() {
         return bookInventory;
     }
 
-    // Sell books from the inventory
     public boolean sellBook(int bookID, int quantity) {
         if (bookInventory.containsKey(bookID) && bookInventory.get(bookID).getQuantity() >= quantity) {
             Book book = bookInventory.get(bookID);
@@ -58,17 +55,14 @@ public class BookStoreManager {
         return false;
     }
 
-    // Get the list of sales
     public List<Sale> getSales() {
         return sales;
     }
 
-    // Get total revenue
     public double getTotalRevenue() {
         return totalRevenue;
     }
 
-    // Main method to run the console application
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         BookStoreManager storeManager = BookStoreManager.getInstance();
@@ -78,8 +72,8 @@ public class BookStoreManager {
         storeManager.addBook("Pride and Prejudice", "Jane Austen", 8.75, 18, "A romantic novel.");
         storeManager.addBook("The Catcher in the Rye", "J.D. Salinger", 11.25, 12, "A coming-of-age novel.");
         while (true) {
-            System.out.print("\033[H\033[2J"); // Clear console
-            System.out.flush(); // Flush the console
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
             System.out.println("Menu:");
             System.out.println("1. Add a book");
             System.out.println("2. View book list");
@@ -90,7 +84,7 @@ public class BookStoreManager {
             System.out.println("7. Exit");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -102,7 +96,7 @@ public class BookStoreManager {
                     double price = scanner.nextDouble();
                     System.out.print("Enter the quantity: ");
                     int quantity = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline character
+                    scanner.nextLine();
                     System.out.print("Enter the description: ");
                     String description = scanner.nextLine();
                     storeManager.addBook(title, author, price, quantity, description);

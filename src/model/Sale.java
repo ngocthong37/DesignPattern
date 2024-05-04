@@ -2,7 +2,6 @@ package model;
 
 import java.time.LocalDate;
 
-// Sale entity class representing a book sale transaction
 public class Sale {
     private Book book;
     private int quantity;
