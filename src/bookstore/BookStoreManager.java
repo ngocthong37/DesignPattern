@@ -12,31 +12,28 @@ import java.util.Scanner;
 
 // Singleton class for managing the book store
 public class BookStoreManager {
-    private static BookStoreManager instance;
     private final Map<Integer, Book> bookInventory;
     private final List<Sale> sales;
     private double totalRevenue;
     private int nextBookID;
 
-    private BookStoreManager() {
+    // Constructor
+    public BookStoreManager() {
         bookInventory = new HashMap<>();
         sales = new ArrayList<>();
         totalRevenue = 0;
         nextBookID = 1;
     }
 
-    // Get the singleton instance
-    public static synchronized BookStoreManager getInstance() {
-        if (instance == null) {
-            instance = new BookStoreManager();
-        }
-        return instance;
+    // Factory method to create Book instances
+    public Book createBook(String title, String author, double price, int quantity, String description) {
+        Book book = new Book(nextBookID++, title, author, price, description);
+        book.setQuantity(quantity);
+        return book;
     }
 
     // Add books to the inventory
-    public void addBook(String title, String author, double price, int quantity, String description) {
-        Book book = new Book(nextBookID++, title, author, price, description);
-        book.setQuantity(quantity);
+    public void addBook(Book book) {
         bookInventory.put(book.getBookID(), book);
     }
 
@@ -71,12 +68,8 @@ public class BookStoreManager {
     // Main method to run the console application
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        BookStoreManager storeManager = BookStoreManager.getInstance();
-        storeManager.addBook("The Great Gatsby", "F. Scott Fitzgerald", 10.99, 20, "A classic American novel.");
-        storeManager.addBook("To Kill a Mockingbird", "Harper Lee", 12.50, 15, "A Pulitzer Prize-winning novel.");
-        storeManager.addBook("1984", "George Orwell", 9.99, 25, "A dystopian novel.");
-        storeManager.addBook("Pride and Prejudice", "Jane Austen", 8.75, 18, "A romantic novel.");
-        storeManager.addBook("The Catcher in the Rye", "J.D. Salinger", 11.25, 12, "A coming-of-age novel.");
+        BookStoreManager storeManager = new BookStoreManager();
+
         while (true) {
             System.out.print("\033[H\033[2J"); // Clear console
             System.out.flush(); // Flush the console
@@ -105,7 +98,8 @@ public class BookStoreManager {
                     scanner.nextLine(); // Consume newline character
                     System.out.print("Enter the description: ");
                     String description = scanner.nextLine();
-                    storeManager.addBook(title, author, price, quantity, description);
+                    Book book = storeManager.createBook(title, author, price, quantity, description);
+                    storeManager.addBook(book);
                     System.out.println("Book added successfully!");
                     break;
                 case 2:
@@ -115,13 +109,13 @@ public class BookStoreManager {
                         System.out.println("No books in the inventory.");
                     } else {
                         for (Map.Entry<Integer, Book> entry : bookList.entrySet()) {
-                            Book book = entry.getValue();
-                            System.out.println("ID: " + book.getBookID());
-                            System.out.println("Title: " + book.getTitle());
-                            System.out.println("Author: " + book.getAuthor());
-                            System.out.println("Price: $" + book.getPrice());
-                            System.out.println("Quantity: " + book.getQuantity());
-                            System.out.println("Description: " + book.getDescription());
+                            Book bookEntry = entry.getValue();
+                            System.out.println("ID: " + bookEntry.getBookID());
+                            System.out.println("Title: " + bookEntry.getTitle());
+                            System.out.println("Author: " + bookEntry.getAuthor());
+                            System.out.println("Price: $" + bookEntry.getPrice());
+                            System.out.println("Quantity: " + bookEntry.getQuantity());
+                            System.out.println("Description: " + bookEntry.getDescription());
                         }
                     }
                     break;
@@ -136,14 +130,14 @@ public class BookStoreManager {
                     } else {
                         System.out.println("Failed to sell book! Not enough quantity in inventory or invalid book ID.");
                     }
-                    break;
+                    break;2
                 case 4:
                     System.out.println("Sales:");
-                    List<Sale> sales = storeManager.getSales();
-                    if (sales.isEmpty()) {
+                    List<Sale> salesList = storeManager.getSales();
+                    if (salesList.isEmpty()) {
                         System.out.println("No sales recorded yet.");
                     } else {
-                        for (Sale sale : sales) {
+                        for (Sale sale : salesList) {
                             System.out.println("Book: " + sale.getBook().getTitle() + ", Quantity: " + sale.getQuantity() + ", Date: " + sale.getDate());
                         }
                     }
@@ -157,15 +151,15 @@ public class BookStoreManager {
                     bookList = storeManager.getBookList();
                     boolean found = false;
                     for (Map.Entry<Integer, Book> entry : bookList.entrySet()) {
-                        Book book = entry.getValue();
-                        if (book.getTitle().equalsIgnoreCase(searchTitle)) {
+                        Book bookEntry = entry.getValue();
+                        if (bookEntry.getTitle().equalsIgnoreCase(searchTitle)) {
                             System.out.println("Book found:");
-                            System.out.println("ID: " + book.getBookID());
-                            System.out.println("Title: " + book.getTitle());
-                            System.out.println("Author: " + book.getAuthor());
-                            System.out.println("Price: $" + book.getPrice());
-                            System.out.println("Quantity: " + book.getQuantity());
-                            System.out.println("Description: " + book.getDescription());
+                            System.out.println("ID: " + bookEntry.getBookID());
+                            System.out.println("Title: " + bookEntry.getTitle());
+                            System.out.println("Author: " + bookEntry.getAuthor());
+                            System.out.println("Price: $" + bookEntry.getPrice());
+                            System.out.println("Quantity: " + bookEntry.getQuantity());
+                            System.out.println("Description: " + bookEntry.getDescription());
                             found = true;
                             break;
                         }
@@ -177,8 +171,10 @@ public class BookStoreManager {
                 case 7:
                     System.out.println("Exiting...");
                     System.exit(0);
+                    break;
                 default:
                     System.out.println("Invalid choice! Please enter a valid option.");
+                // Add other cases for selling books, viewing sales, viewing revenue, searching for a book, and exiting
             }
         }
     }
